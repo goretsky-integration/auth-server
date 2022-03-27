@@ -7,7 +7,6 @@ authors = ["Eldos <eldos.baktybekov@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 environs = "^9.5.0"
-loguru = "^0.6.0"
 requests = "^2.27.1"
 redis = "^4.1.4"
 

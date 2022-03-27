@@ -11,7 +11,6 @@ def main():
         accounts = dodo_account.filter_accounts_with_expired_cookies(all_accounts)
         for account in accounts:
             authenticator.update_account_cookies(account)
-            time.sleep(1)
         time.sleep(config.COOKIES_UPDATE_DELAY)
 
 

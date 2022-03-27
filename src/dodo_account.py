@@ -16,10 +16,7 @@ __all__ = (
 
 class DodoAccount:
     _login_url = 'https://auth.dodopizza.ru/Authenticate/LogOn'
-    _headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-                      ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36'
-    }
+    _headers = {'user-agent': 'Goretsky-Band'}
     __slots__ = ('__login', '__password', '__name')
 
     def __init__(self, name: str, login: str, password: str):
@@ -40,6 +37,13 @@ class DodoAccount:
         }
 
     def get_auth_cookies(self) -> dict:
+        """Auth in Dodo IS and get session cookies.
+
+        Returns:
+            Session cookies.
+        Raises:
+            UnsuccessfulAuthError exception if auth failed.
+        """
         with requests.Session() as session:
             response = session.post('https://auth.dodopizza.ru/Authenticate/LogOn',
                                     headers=self._headers, data=self.auth_data)
@@ -48,7 +52,15 @@ class DodoAccount:
             return session.cookies.get_dict()
 
 
-def filter_accounts_with_expired_cookies(accounts: Iterable[DodoAccount]):
+def filter_accounts_with_expired_cookies(accounts: Iterable[DodoAccount]) -> list[DodoAccount]:
+    """Check if account's cookies about to expire.
+
+    Args:
+        accounts: Collection of Dodo account objects.
+
+    Returns:
+        List of DodoAccount which cookies need to be updated.
+    """
     account_cookies_for_update = []
     for account in accounts:
         cookies_lifetime = redis_db.get_cookies_lifetime(account.name)
@@ -59,6 +71,11 @@ def filter_accounts_with_expired_cookies(accounts: Iterable[DodoAccount]):
 
 
 def get_dodo_accounts() -> list[DodoAccount]:
+    """Get dodo accounts.
+
+    Returns:
+        List of DodoAccount objects.
+    """
     credentials = utils.read_accounts_file()
     return [DodoAccount(account['name'], account['login'], account['password'])
             for account in credentials]
