@@ -29,4 +29,8 @@ def get_new_access_token(refresh_token: str) -> models.AuthCredentials:
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token
     }
-    return requests.post(TOKEN_URL, data=data).json()
+    response_json = requests.post(TOKEN_URL, data=data).json()
+    error_message = response_json.get('error')
+    if error_message is not None:
+        raise exceptions.UnsuccessfulTokenRefreshError(error_message)
+    return response_json
