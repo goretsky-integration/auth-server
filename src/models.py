@@ -5,6 +5,7 @@ class Account(TypedDict):
     login: str
     name: str
     password: str
+    account_name: str
 
 
 class AuthCredentials(TypedDict):
