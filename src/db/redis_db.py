@@ -1,20 +1,17 @@
-from redis import Redis
+import redis
 
 import config
+import models
 from utils import logger
 
 __all__ = (
     'set_cookies',
-    'get_cookies_lifetime',
     'close_redis_connection',
+    'set_token',
+    'get_token',
 )
 
-_redis = Redis(
-    host=config.REDIS_HOST,
-    port=config.REDIS_PORT,
-    db=config.REDIS_DB,
-    decode_responses=True
-)
+_redis = redis.from_url(config.REDIS_URL, decode_responses=True)
 
 
 def set_cookies(account_name: str, cookies: dict):
@@ -28,16 +25,14 @@ def set_cookies(account_name: str, cookies: dict):
     _redis.expire(account_name, config.COOKIES_LIFETIME)
 
 
-def get_cookies_lifetime(account_name: str) -> int:
-    """Get time in seconds before cookies will be expired.
+def set_token(account_name: str, auth_credentials: models.AuthCredentials):
+    name = f'token_{account_name}'
+    _redis.hset(name, mapping=auth_credentials)
+    _redis.expire(name, auth_credentials['expires_in'])
 
-    Args:
-        account_name: Related to account unique cookies name.
 
-    Returns:
-        Time in seconds.
-    """
-    return _redis.ttl(account_name)
+def get_token(account_name: str) -> models.AuthCredentials:
+    return _redis.hgetall(f'token_{account_name}')
 
 
 def close_redis_connection():
