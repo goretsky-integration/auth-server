@@ -9,7 +9,11 @@ def main():
     office_manager_account_names = (account['name'] for account in accounts if account['name'].startswith('office'))
     for account_name in office_manager_account_names:
         auth_credentials = db.get_token(account_name)
-        refresh_token = auth_credentials['refresh_token']
+        try:
+            refresh_token = auth_credentials['refresh_token']
+        except KeyError:
+            logger.error(f'Account {account_name} refresh token is missing')
+            continue
         try:
             new_auth_credentials = dodo.get_new_access_token(refresh_token)
         except exceptions.UnsuccessfulTokenRefreshError as error:
