@@ -1,5 +1,6 @@
 import db
 import dodo
+import exceptions
 from utils import logger
 
 
@@ -9,9 +10,13 @@ def main():
     for account_name in office_manager_account_names:
         auth_credentials = db.get_token(account_name)
         refresh_token = auth_credentials['refresh_token']
-        new_auth_credentials = dodo.get_new_access_token(refresh_token)
-        db.set_token(account_name, new_auth_credentials)
-        logger.info(f'Account {account_name} token has been updated')
+        try:
+            new_auth_credentials = dodo.get_new_access_token(refresh_token)
+        except exceptions.UnsuccessfulTokenRefreshError as error:
+            logger.error(f'Could not update account {account_name} token:', str(error))
+        else:
+            db.set_token(account_name, new_auth_credentials)
+            logger.info(f'Account {account_name} token has been updated')
 
 
 if __name__ == '__main__':
