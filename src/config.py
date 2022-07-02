@@ -1,3 +1,5 @@
+import pathlib
+
 from environs import Env
 
 __all__ = (
@@ -9,6 +11,7 @@ __all__ = (
     'CLIENT_ID',
     'REDIRECT_URI',
     'DEBUG',
+    'ROOT_PATH',
 )
 
 env = Env()
@@ -22,3 +25,5 @@ CLIENT_ID: str = env.str('CLIENT_ID')
 CLIENT_SECRET: str = env.str('CLIENT_SECRET')
 REDIRECT_URI: str = env.str('REDIRECT_URI')
 DEBUG: bool = env.bool('DEBUG')
+
+ROOT_PATH = pathlib.Path(__file__).parent.parent
