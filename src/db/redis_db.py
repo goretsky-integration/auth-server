@@ -1,7 +1,6 @@
 import redis
 
 import config
-import models
 from utils import logger
 
 __all__ = (
@@ -25,14 +24,12 @@ def set_cookies(account_name: str, cookies: dict):
     _redis.expire(account_name, config.COOKIES_LIFETIME)
 
 
-def set_token(account_name: str, auth_credentials: models.AuthCredentials):
-    name = f'token_{account_name}'
-    _redis.hset(name, mapping=auth_credentials)
-    _redis.expire(name, auth_credentials['expires_in'])
+def set_token(account_name: str, access_token: str):
+    _redis.hset('tokens', account_name, access_token)
 
 
-def get_token(account_name: str) -> models.AuthCredentials:
-    return _redis.hgetall(f'token_{account_name}')
+def get_token(account_name: str) -> str:
+    return _redis.hget('tokens', account_name)
 
 
 def close_redis_connection():
