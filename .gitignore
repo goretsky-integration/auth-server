@@ -140,3 +140,4 @@ cython_debug/
 
 accounts.json
 .idea
+local_storage.json
