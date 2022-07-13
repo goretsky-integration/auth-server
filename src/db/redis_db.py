@@ -1,3 +1,5 @@
+import json
+
 import redis
 
 import config
@@ -7,7 +9,6 @@ __all__ = (
     'set_cookies',
     'close_redis_connection',
     'set_token',
-    'get_token',
 )
 
 _redis = redis.from_url(config.REDIS_URL, decode_responses=True)
@@ -20,16 +21,14 @@ def set_cookies(account_name: str, cookies: dict):
         account_name: Related to account unique cookies name.
         cookies: new cookies to be set.
     """
-    _redis.hset(account_name, mapping=cookies)
-    _redis.expire(account_name, config.COOKIES_LIFETIME)
+    cookies_json = json.dumps(cookies)
+    key = f'cookies_{account_name}'
+    _redis.set(key, cookies_json)
+    _redis.expire(key, config.COOKIES_LIFETIME)
 
 
 def set_token(account_name: str, access_token: str):
-    _redis.hset('tokens', account_name, access_token)
-
-
-def get_token(account_name: str) -> str:
-    return _redis.hget('tokens', account_name)
+    _redis.set(f'token_{account_name}', access_token)
 
 
 def close_redis_connection():
