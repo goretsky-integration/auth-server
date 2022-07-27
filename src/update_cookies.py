@@ -22,6 +22,7 @@ def main():
             logger.warning(f'Could not update {account["name"]} account')
         else:
             db.set_cookies(account['name'], cookies)
+            db.update_cookies(cookies, account['name'])
             logger.debug(f'Account {account["name"]} cookies have been updated')
 
 
