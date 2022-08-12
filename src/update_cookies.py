@@ -10,7 +10,6 @@ from utils import logger
 @atexit.register
 def on_shutdown():
     db.close_mongo_db_connection()
-    db.close_redis_connection()
 
 
 def main():
@@ -21,7 +20,6 @@ def main():
         except exceptions.UnsuccessfulAuthError:
             logger.warning(f'Could not update {account["name"]} account')
         else:
-            db.set_cookies(account['name'], cookies)
             db.update_cookies(cookies, account['name'])
             logger.debug(f'Account {account["name"]} cookies have been updated')
 
