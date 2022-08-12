@@ -8,7 +8,6 @@ authors = ["Eldos <eldos.baktybekov@gmail.com>"]
 python = "^3.9"
 environs = "^9.5.0"
 requests = "^2.27.1"
-redis = "^4.1.4"
 cryptography = "^37.0.3"
 pymongo = "^4.1.1"
 dnspython = "^2.2.1"

@@ -21,7 +21,6 @@ def main():
             access_token = new_auth_credentials['access_token']
             refresh_token = new_auth_credentials['refresh_token']
             db.update_tokens(access_token, refresh_token, account_name)
-            db.set_token(account_name, access_token)
             db.local_storage.set_item(key=account_name, value=refresh_token)
             logger.info(f'Account {account_name} token has been updated')
 
