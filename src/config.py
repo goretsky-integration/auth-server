@@ -1,29 +1,41 @@
-import pathlib
+from functools import lru_cache
 
-from environs import Env
+from dotenv import load_dotenv
+from pydantic import BaseSettings, Field
 
 __all__ = (
-    'COOKIES_LIFETIME',
-    'REDIS_URL',
-    'SECRET_KEY',
-    'MONGO_DB_URL',
-    'CLIENT_SECRET',
-    'CLIENT_ID',
-    'REDIRECT_URI',
-    'DEBUG',
-    'ROOT_PATH',
+    'get_app_settings',
+    'get_crypt_settings',
+    'get_oauth_settings',
 )
 
-env = Env()
-env.read_env()
+load_dotenv()
 
-COOKIES_LIFETIME: int = env.int('COOKIES_LIFETIME')
-SECRET_KEY: str = env.str('SECRET_KEY')
-MONGO_DB_URL: str = env.str('MONGO_DB_URL')
-REDIS_URL: str = env.str('REDIS_URL')
-CLIENT_ID: str = env.str('CLIENT_ID')
-CLIENT_SECRET: str = env.str('CLIENT_SECRET')
-REDIRECT_URI: str = env.str('REDIRECT_URI')
-DEBUG: bool = env.bool('DEBUG')
 
-ROOT_PATH = pathlib.Path(__file__).parent.parent
+class OAuthSettings(BaseSettings):
+    client_id: str = Field(env='CLIENT_ID')
+    client_secret: str = Field(env='CLIENT_SECRET')
+    redirect_uri: str = Field(env='REDIRECT_URI')
+
+
+class AppSettings(BaseSettings):
+    debug: bool = Field(env='DEBUG')
+
+
+class CryptSettings(BaseSettings):
+    secret_key: str = Field(env='SECRET_KEY')
+
+
+@lru_cache(maxsize=1)
+def get_oauth_settings() -> OAuthSettings:
+    return OAuthSettings()
+
+
+@lru_cache(maxsize=1)
+def get_app_settings() -> AppSettings:
+    return AppSettings()
+
+
+@lru_cache(maxsize=1)
+def get_crypt_settings() -> CryptSettings:
+    return CryptSettings()
