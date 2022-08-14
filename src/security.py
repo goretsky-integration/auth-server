@@ -1,4 +1,6 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
+
+import exceptions
 
 __all__ = (
     'CryptText',
@@ -14,7 +16,10 @@ class CryptText:
         return self.__fernet.encrypt(value.encode('utf-8')).decode('utf-8')
 
     def decrypt(self, value: str) -> str:
-        return self.__fernet.decrypt(value.encode('utf-8')).decode('utf-8')
+        try:
+            return self.__fernet.decrypt(value.encode('utf-8')).decode('utf-8')
+        except InvalidToken:
+            raise exceptions.AuthCredentialsDecodeError
 
     @staticmethod
     def generate_key() -> str:
