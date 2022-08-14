@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import TypedDict
 
 
-class Account(TypedDict):
-    login: str
+@dataclass(frozen=True, slots=True)
+class Account:
     name: str
+    login: str
     password: str
-    account_name: str
 
 
 class AuthCredentials(TypedDict):
@@ -14,3 +15,9 @@ class AuthCredentials(TypedDict):
     token_type: str
     refresh_token: str
     scope: str
+
+
+@dataclass(frozen=True, slots=True)
+class AuthCookies:
+    account_name: str
+    cookies: dict[str, str]
