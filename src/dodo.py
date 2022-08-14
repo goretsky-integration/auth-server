@@ -26,7 +26,12 @@ def get_new_auth_cookies(account_name: str, login: str, password: str) -> models
         return models.AuthCookies(account_name=account_name, cookies=cookies)
 
 
-async def get_new_auth_tokens(client_id: str, client_secret: str, refresh_token: str) -> models.AuthCredentials:
+async def get_new_auth_tokens(
+        account_name: str,
+        client_id: str,
+        client_secret: str,
+        refresh_token: str
+) -> models.AuthTokens:
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
@@ -41,4 +46,6 @@ async def get_new_auth_tokens(client_id: str, client_secret: str, refresh_token:
         raise exceptions.ForbiddenHostError('It is not allowed to login from this host')
     if error_message is not None:
         raise exceptions.UnsuccessfulTokenRefreshError(error_message)
-    return response_json
+    return models.AuthTokens(access_token=response_json['access_token'],
+                             refresh_token=response_json['refresh_token'],
+                             account_name=account_name)

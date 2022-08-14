@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import TypedDict
 
 
 @dataclass(frozen=True, slots=True)
@@ -9,12 +8,11 @@ class Account:
     password: str
 
 
-class AuthCredentials(TypedDict):
+@dataclass(frozen=True, slots=True)
+class AuthTokens:
+    account_name: str
     access_token: str
-    expires_in: int
-    token_type: str
     refresh_token: str
-    scope: str
 
 
 @dataclass(frozen=True, slots=True)
