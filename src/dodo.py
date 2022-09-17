@@ -11,7 +11,7 @@ __all__ = (
 
 LOGIN_URL = 'https://auth.dodopizza.ru/Authenticate/LogOn'
 TOKEN_URL = 'https://auth.dodois.io/connect/token'
-HEADERS = {'User-Agent': 'Goretsky-Band'}
+HEADERS = {'User-Agent': 'dodoextbot'}
 
 
 def get_new_auth_cookies(account_name: str, login: str, password: str) -> models.AuthCookies:
