@@ -5,12 +5,12 @@ description = ""
 authors = ["Eldos <eldos.baktybekov@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 environs = "^9.5.0"
 requests = "^2.27.1"
 cryptography = "^37.0.3"
-pymongo = "^4.1.1"
-dnspython = "^2.2.1"
+dodo-lib-usbtypec1 = "^1.1.0"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 

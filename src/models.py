@@ -1,16 +1,21 @@
-from typing import TypedDict
+from dataclasses import dataclass
 
 
-class Account(TypedDict):
-    login: str
+@dataclass(frozen=True, slots=True)
+class Account:
     name: str
+    login: str
     password: str
+
+
+@dataclass(frozen=True, slots=True)
+class AuthTokens:
     account_name: str
-
-
-class AuthCredentials(TypedDict):
     access_token: str
-    expires_in: int
-    token_type: str
     refresh_token: str
-    scope: str
+
+
+@dataclass(frozen=True, slots=True)
+class AuthCookies:
+    account_name: str
+    cookies: dict[str, str]

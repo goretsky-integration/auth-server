@@ -1,29 +1,36 @@
-import db
+import asyncio
+
+from dodolib import DatabaseClient, AuthClient
+from dodolib.models import AuthToken
+from dodolib.utils.convert_models import UnitsConverter
+
 import dodo
 import exceptions
-from utils import logger
+import models
+from config import get_oauth_settings
 
 
-def main():
-    accounts = db.get_accounts()
-    office_manager_account_names = (account['name'] for account in accounts if account['name'].startswith('office'))
-    for account_name in office_manager_account_names:
-        try:
-            refresh_token = db.local_storage.get_item(account_name)
-        except exceptions.LocalStorageItemIsNotFoundError:
-            logger.error(f'Account {account_name} refresh token is missing')
-            continue
-        try:
-            new_auth_credentials = dodo.get_new_access_token(refresh_token)
-        except exceptions.UnsuccessfulTokenRefreshError as error:
-            logger.error(f'Could not update account {account_name} token:', str(error))
-        else:
-            access_token = new_auth_credentials['access_token']
-            refresh_token = new_auth_credentials['refresh_token']
-            db.update_tokens(access_token, refresh_token, account_name)
-            db.local_storage.set_item(key=account_name, value=refresh_token)
-            logger.info(f'Account {account_name} token has been updated')
+async def main():
+    oauth_settings = get_oauth_settings()
+    async with (
+        DatabaseClient() as db_client,
+        AuthClient() as auth_client,
+    ):
+        units = UnitsConverter(await db_client.get_units())
+        tasks = (auth_client.get_tokens(account_name) for account_name in units.account_names)
+        accounts_tokens: tuple[AuthToken, ...] = await asyncio.gather(*tasks)
+
+        tasks = (dodo.get_new_auth_tokens(account_tokens.account_name, oauth_settings.client_id,
+                                          oauth_settings.client_secret, account_tokens.refresh_token)
+                 for account_tokens in accounts_tokens)
+
+        accounts_new_tokens: tuple[models.AuthTokens, ...] = await asyncio.gather(*tasks, return_exceptions=True)
+
+        tasks = (auth_client.update_tokens(new_tokens.account_name, new_tokens.access_token, new_tokens.refresh_token)
+                 for new_tokens in accounts_new_tokens
+                 if not isinstance(new_tokens, exceptions.UnsuccessfulTokenRefreshError))
+        await asyncio.gather(*tasks, return_exceptions=True)
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
