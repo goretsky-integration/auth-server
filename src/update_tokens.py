@@ -1,36 +1,31 @@
-import asyncio
-
-from dodolib import DatabaseClient, AuthClient
-from dodolib.models import AuthToken
-from dodolib.utils.convert_models import UnitsConverter
+import pathlib
 
 import dodo
-import exceptions
-import models
-from config import get_oauth_settings
+from config import load_config, setup_logging
+from external_api_services import AuthService, DatabaseService
 
 
-async def main():
-    oauth_settings = get_oauth_settings()
-    async with (
-        DatabaseClient() as db_client,
-        AuthClient() as auth_client,
-    ):
-        units = UnitsConverter(await db_client.get_units())
-        tasks = (auth_client.get_tokens(account_name) for account_name in units.account_names)
-        accounts_tokens: tuple[AuthToken, ...] = await asyncio.gather(*tasks)
+def main():
+    config_file_path = pathlib.Path(__file__).parent.parent / 'config.toml'
+    config = load_config(config_file_path)
+    setup_logging(config.logging)
 
-        tasks = (dodo.get_new_auth_tokens(account_tokens.account_name, oauth_settings.client_id,
-                                          oauth_settings.client_secret, account_tokens.refresh_token)
-                 for account_tokens in accounts_tokens)
+    database_service = DatabaseService(base_url=config.external_api.database_service_base_url)
+    auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
 
-        accounts_new_tokens: tuple[models.AuthTokens, ...] = await asyncio.gather(*tasks, return_exceptions=True)
+    accounts = database_service.get_accounts()
+    office_manager_account_names = {account.name for account in accounts if account.name.startswith('office')}
 
-        tasks = (auth_client.update_tokens(new_tokens.account_name, new_tokens.access_token, new_tokens.refresh_token)
-                 for new_tokens in accounts_new_tokens
-                 if not isinstance(new_tokens, exceptions.UnsuccessfulTokenRefreshError))
-        await asyncio.gather(*tasks, return_exceptions=True)
+    for account_name in office_manager_account_names:
+        account_tokens = auth_service.get_account_tokens(account_name)
+        new_account_tokens = dodo.get_new_auth_tokens(
+            account_name=account_name,
+            client_id=config.dodo_is_api_credentials.client_id,
+            client_secret=config.dodo_is_api_credentials.client_secret,
+            refresh_token=account_tokens.refresh_token,
+        )
+        auth_service.update_account_tokens(new_account_tokens)
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
