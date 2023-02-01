@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 import exceptions
@@ -38,7 +40,10 @@ def get_new_auth_tokens(
         'refresh_token': refresh_token
     }
     response = requests.post(TOKEN_URL, data=data)
-    response_json = response.json()
+    try:
+        response_json = response.json()
+    except json.JSONDecodeError:
+        raise exceptions.UnsuccessfulTokenRefreshError('Could not decode response JSON')
     error_message = response_json.get('error')
     if response.status_code == 403:
         raise exceptions.ForbiddenHostError('It is not allowed to login from this host')
