@@ -5,7 +5,7 @@ import dodo
 import exceptions
 import models
 from config import load_config, setup_logging
-from external_api_services import DatabaseService
+from external_api_services import DatabaseService, AuthService
 from security import CryptText
 
 
@@ -35,9 +35,9 @@ def main():
     for account in decrypted_accounts:
         accounts_cookies.append(dodo.get_new_auth_cookies(account.name, account.login, account.password))
 
-    # auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
-    # for account_cookies in accounts_cookies:
-    #     auth_service.update_account_cookies(account_cookies)
+    auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
+    for account_cookies in accounts_cookies:
+        auth_service.update_account_cookies(account_cookies)
 
 
 if __name__ == '__main__':
