@@ -1,4 +1,5 @@
-import httpx
+import json
+
 import requests
 
 import exceptions
@@ -26,7 +27,7 @@ def get_new_auth_cookies(account_name: str, login: str, password: str) -> models
         return models.AuthCookies(account_name=account_name, cookies=cookies)
 
 
-async def get_new_auth_tokens(
+def get_new_auth_tokens(
         account_name: str,
         client_id: str,
         client_secret: str,
@@ -38,9 +39,11 @@ async def get_new_auth_tokens(
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.post(TOKEN_URL, data=data)
-    response_json = response.json()
+    response = requests.post(TOKEN_URL, data=data)
+    try:
+        response_json = response.json()
+    except json.JSONDecodeError:
+        raise exceptions.UnsuccessfulTokenRefreshError('Could not decode response JSON')
     error_message = response_json.get('error')
     if response.status_code == 403:
         raise exceptions.ForbiddenHostError('It is not allowed to login from this host')

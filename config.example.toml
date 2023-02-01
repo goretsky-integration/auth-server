@@ -1,0 +1,15 @@
+[app]
+debug = false
+secret_key = ""
+
+[logging]
+level = "INFO"
+logfile_path = ""
+
+[external_api]
+auth_service_base_url = ""
+database_service_base_url = ""
+
+[dodo_is_api_credentials]
+client_id = ""
+client_secret = ""

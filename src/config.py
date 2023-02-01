@@ -1,41 +1,73 @@
-from functools import lru_cache
-
-from dotenv import load_dotenv
-from pydantic import BaseSettings, Field
+import logging
+import pathlib
+import tomllib
+from dataclasses import dataclass
 
 __all__ = (
-    'get_app_settings',
-    'get_crypt_settings',
-    'get_oauth_settings',
+    'AppConfig',
+    'LoggingConfig',
+    'DodoISAPICredentialsConfig',
+    'ExternalAPIConfig',
+    'Config',
+    'load_config',
+    'setup_logging',
 )
 
-load_dotenv()
+
+@dataclass(frozen=True, slots=True)
+class AppConfig:
+    debug: bool
+    secret_key: str
 
 
-class OAuthSettings(BaseSettings):
-    client_id: str = Field(env='CLIENT_ID')
-    client_secret: str = Field(env='CLIENT_SECRET')
-    redirect_uri: str = Field(env='REDIRECT_URI')
+@dataclass(frozen=True, slots=True)
+class LoggingConfig:
+    level: str
+    logfile_path: str
 
 
-class AppSettings(BaseSettings):
-    debug: bool = Field(env='DEBUG')
+@dataclass(frozen=True, slots=True)
+class ExternalAPIConfig:
+    auth_service_base_url: str
+    database_service_base_url: str
 
 
-class CryptSettings(BaseSettings):
-    secret_key: str = Field(env='SECRET_KEY')
+@dataclass(frozen=True, slots=True)
+class DodoISAPICredentialsConfig:
+    client_id: str
+    client_secret: str
 
 
-@lru_cache(maxsize=1)
-def get_oauth_settings() -> OAuthSettings:
-    return OAuthSettings()
+@dataclass(frozen=True, slots=True)
+class Config:
+    app: AppConfig
+    logging: LoggingConfig
+    external_api: ExternalAPIConfig
+    dodo_is_api_credentials: DodoISAPICredentialsConfig
 
 
-@lru_cache(maxsize=1)
-def get_app_settings() -> AppSettings:
-    return AppSettings()
+def load_config(config_file_path: str | pathlib.Path) -> Config:
+    with open(config_file_path, 'rb') as file:
+        config = tomllib.load(file)
+    return Config(
+        app=AppConfig(
+            debug=config['app']['debug'],
+            secret_key=config['app']['secret_key'],
+        ),
+        logging=LoggingConfig(
+            level=config['logging']['level'],
+            logfile_path=config['logging']['logfile_path'],
+        ),
+        external_api=ExternalAPIConfig(
+            auth_service_base_url=config['external_api']['auth_service_base_url'],
+            database_service_base_url=config['external_api']['database_service_base_url'],
+        ),
+        dodo_is_api_credentials=DodoISAPICredentialsConfig(
+            client_id=config['dodo_is_api_credentials']['client_id'],
+            client_secret=config['dodo_is_api_credentials']['client_secret'],
+        ),
+    )
 
 
-@lru_cache(maxsize=1)
-def get_crypt_settings() -> CryptSettings:
-    return CryptSettings()
+def setup_logging(logging_config: LoggingConfig) -> None:
+    logging.basicConfig(filename=logging_config.logfile_path, level=logging_config.level)
