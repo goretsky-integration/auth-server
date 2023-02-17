@@ -39,7 +39,6 @@ class LoggingConfig:
 @dataclass(frozen=True, slots=True)
 class ExternalAPIConfig:
     auth_service_base_url: str
-    database_service_base_url: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,7 +75,6 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
         ),
         external_api=ExternalAPIConfig(
             auth_service_base_url=config['external_api']['auth_service_base_url'],
-            database_service_base_url=config['external_api']['database_service_base_url'],
         ),
         dodo_is_api_credentials=DodoISAPICredentialsConfig(
             client_id=config['dodo_is_api_credentials']['client_id'],
