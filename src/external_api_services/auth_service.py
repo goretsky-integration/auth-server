@@ -37,3 +37,15 @@ class AuthService:
             "cookies": account_cookies.cookies,
         }
         requests.patch(url, json=request_data)
+
+    def get_accounts(self) -> list[models.Account]:
+        url = f'{self.__base_url}/accounts/'
+        response = requests.get(url)
+        response_data = response.json()
+        return [
+            models.Account(
+                name=account['name'],
+                login=account['login'],
+                password=account['password'],
+            ) for account in response_data
+        ]

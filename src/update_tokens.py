@@ -2,7 +2,7 @@ import pathlib
 
 import dodo
 from config import load_config, setup_logging
-from external_api_services import AuthService, DatabaseService
+from external_api_services import AuthService
 
 
 def main():
@@ -10,10 +10,9 @@ def main():
     config = load_config(config_file_path)
     setup_logging(config.logging)
 
-    database_service = DatabaseService(base_url=config.external_api.database_service_base_url)
     auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
 
-    accounts = database_service.get_accounts()
+    accounts = auth_service.get_accounts()
     office_manager_account_names = {account.name for account in accounts if account.name.startswith('office')}
 
     for account_name in office_manager_account_names:
