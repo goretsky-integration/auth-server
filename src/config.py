@@ -11,13 +11,23 @@ __all__ = (
     'Config',
     'load_config',
     'setup_logging',
+    'config',
 )
+
+CONFIG_FILE_PATH = pathlib.Path(__file__).parent.parent / 'config.toml'
+
+
+@dataclass(frozen=True, slots=True)
+class DatabaseConfig:
+    url: str
 
 
 @dataclass(frozen=True, slots=True)
 class AppConfig:
     debug: bool
     secret_key: str
+    host: str
+    port: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,7 +39,6 @@ class LoggingConfig:
 @dataclass(frozen=True, slots=True)
 class ExternalAPIConfig:
     auth_service_base_url: str
-    database_service_base_url: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +49,7 @@ class DodoISAPICredentialsConfig:
 
 @dataclass(frozen=True, slots=True)
 class Config:
+    database: DatabaseConfig
     app: AppConfig
     logging: LoggingConfig
     external_api: ExternalAPIConfig
@@ -50,9 +60,14 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
     with open(config_file_path, 'rb') as file:
         config = tomllib.load(file)
     return Config(
+        database=DatabaseConfig(
+            url=config['database']['url'],
+        ),
         app=AppConfig(
             debug=config['app']['debug'],
             secret_key=config['app']['secret_key'],
+            host=config['app']['host'],
+            port=config['app']['port'],
         ),
         logging=LoggingConfig(
             level=config['logging']['level'],
@@ -60,7 +75,6 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
         ),
         external_api=ExternalAPIConfig(
             auth_service_base_url=config['external_api']['auth_service_base_url'],
-            database_service_base_url=config['external_api']['database_service_base_url'],
         ),
         dodo_is_api_credentials=DodoISAPICredentialsConfig(
             client_id=config['dodo_is_api_credentials']['client_id'],
@@ -71,3 +85,6 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
 
 def setup_logging(logging_config: LoggingConfig) -> None:
     logging.basicConfig(filename=logging_config.logfile_path, level=logging_config.level)
+
+
+config = load_config(CONFIG_FILE_PATH)
