@@ -26,6 +26,8 @@ class DatabaseConfig:
 class AppConfig:
     debug: bool
     secret_key: str
+    host: str
+    port: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,6 +67,8 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
         app=AppConfig(
             debug=config['app']['debug'],
             secret_key=config['app']['secret_key'],
+            host=config['app']['host'],
+            port=config['app']['port'],
         ),
         logging=LoggingConfig(
             level=config['logging']['level'],

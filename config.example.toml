@@ -1,6 +1,8 @@
 [app]
 debug = false
 secret_key = ""
+host = ""
+port = 8015
 
 [logging]
 level = "INFO"
