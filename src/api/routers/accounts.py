@@ -4,7 +4,7 @@ from api import schemas
 from api.dependencies import get_accounts_repository
 from repositories import AccountRepository
 
-router = APIRouter(prefix='/accounts')
+router = APIRouter(prefix='/accounts', tags=['Accounts'])
 
 
 @router.get('/')
