@@ -16,3 +16,7 @@ class AuthCredentialsDecodeError(Exception):
 
 class AlreadyExistsInDatabase(Exception):
     pass
+
+
+class DoesNotExistInDatabase(Exception):
+    pass
