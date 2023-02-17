@@ -12,3 +12,7 @@ class ForbiddenHostError(Exception):
 
 class AuthCredentialsDecodeError(Exception):
     pass
+
+
+class AlreadyExistsInDatabase(Exception):
+    pass
