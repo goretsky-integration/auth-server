@@ -8,8 +8,7 @@ from database.models.base import Base
 
 
 class AccountCredentials:
-    id: Mapped[int] = mapped_column(primary_key=True)
-    account_name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    account_name: Mapped[str] = mapped_column(String(64), primary_key=True, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime,
         server_default=func.now(),
