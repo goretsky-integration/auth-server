@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Body, Depends, status, Response
 
 from api import schemas, dependencies
-from repositories import AccountTokensRepository
+from repositories import AccountTokensRepository, AccountCookiesRepository
 
 router = APIRouter(prefix='/auth', tags=['Auth credentials'])
 
@@ -27,15 +27,18 @@ def update_token(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.get('/cookies/')
+@router.get('/cookies/', response_model=schemas.AccountCookies)
 def get_cookies(
         account_name: schemas.AccountName = Query(),
-) -> schemas.AccountCookies:
-    pass
+        accounts_cookies: AccountCookiesRepository = Depends(dependencies.get_account_cookies_repository),
+):
+    return accounts_cookies.get_by_account_name(account_name)
 
 
 @router.patch('/cookies/')
 def update_cookies(
-        cookies: schemas.AccountCookies = Body(),
+        account_cookies: schemas.AccountCookies = Body(),
+        accounts_cookies: AccountCookiesRepository = Depends(dependencies.get_account_cookies_repository),
 ):
-    pass
+    accounts_cookies.update(account_name=account_cookies.account_name, cookies=account_cookies.cookies)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
