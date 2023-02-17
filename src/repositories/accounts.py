@@ -14,7 +14,7 @@ class AccountRepository(Repository):
             select(Account)
             .order_by(Account.name.asc())
             .limit(limit)
-            .skip(skip)
+            .offset(skip)
         )
         with self._session_factory() as session:
             accounts = session.scalars(statement).all()
