@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Body
 
 from api import schemas
 
-router = APIRouter(prefix='/auth')
+router = APIRouter(prefix='/auth', tags=['Auth credentials'])
 
 
 @router.get('/token/')
