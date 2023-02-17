@@ -8,6 +8,8 @@ authors = ["Eldos <eldos.baktybekov@gmail.com>"]
 python = "^3.10"
 requests = "^2.27.1"
 cryptography = "^37.0.3"
+psycopg2-binary = "^2.9.5"
+sqlalchemy = "^2.0.3"
 
 [tool.poetry.dev-dependencies]
 
