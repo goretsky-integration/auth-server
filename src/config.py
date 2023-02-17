@@ -11,7 +11,10 @@ __all__ = (
     'Config',
     'load_config',
     'setup_logging',
+    'config',
 )
+
+CONFIG_FILE_PATH = pathlib.Path(__file__).parent.parent / 'config.toml'
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,3 +83,6 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
 
 def setup_logging(logging_config: LoggingConfig) -> None:
     logging.basicConfig(filename=logging_config.logfile_path, level=logging_config.level)
+
+
+config = load_config(CONFIG_FILE_PATH)
