@@ -1,26 +1,20 @@
 import datetime
 
-from sqlalchemy import ForeignKey, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
+from sqlalchemy import DateTime, func, String
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.orm import Mapped, mapped_column
 
-from database.models.accounts import Account
 from database.models.base import Base
 
 
 class AccountCredentials:
     id: Mapped[int] = mapped_column(primary_key=True)
+    account_name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime,
         server_default=func.now(),
         server_onupdate=func.now(),
     )
-    account_id: Mapped[int] = mapped_column(ForeignKey('accounts.id'), nullable=False, unique=True)
-
-    @declared_attr
-    def account(self) -> Mapped[Account]:
-        return relationship('Account')
-
     __mapper_args__ = {"eager_defaults": True}
 
 
