@@ -15,6 +15,11 @@ __all__ = (
 
 
 @dataclass(frozen=True, slots=True)
+class DatabaseConfig:
+    url: str
+
+
+@dataclass(frozen=True, slots=True)
 class AppConfig:
     debug: bool
     secret_key: str
@@ -40,6 +45,7 @@ class DodoISAPICredentialsConfig:
 
 @dataclass(frozen=True, slots=True)
 class Config:
+    database: DatabaseConfig
     app: AppConfig
     logging: LoggingConfig
     external_api: ExternalAPIConfig
@@ -50,6 +56,9 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
     with open(config_file_path, 'rb') as file:
         config = tomllib.load(file)
     return Config(
+        database=DatabaseConfig(
+            url=config['database']['url'],
+        ),
         app=AppConfig(
             debug=config['app']['debug'],
             secret_key=config['app']['secret_key'],
