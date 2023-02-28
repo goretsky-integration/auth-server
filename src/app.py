@@ -17,5 +17,6 @@ def get_application() -> FastAPI:
     app.add_event_handler('startup', on_startup)
     app.include_router(api.routers.accounts.router)
     app.include_router(api.routers.auth_credentials.router)
+    app.include_router(api.routers.healthcheck.router)
     include_exception_handlers(app)
     return app
