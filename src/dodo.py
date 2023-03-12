@@ -14,7 +14,7 @@ HEADERS = {'User-Agent': 'dodoextbot'}
 
 
 def get_new_auth_cookies(country_code: str, account_name: str, login: str, password: str) -> models.AuthCookies:
-    data = {'login': login, 'password': password}
+    data = {'CountryCode': country_code, 'login': login, 'password': password}
     url = f'https://auth.dodopizza.{country_code}/Authenticate/LogOn'
     with requests.Session() as session:
         response = session.post(url, headers=HEADERS, data=data)
