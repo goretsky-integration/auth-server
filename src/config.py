@@ -49,6 +49,7 @@ class DodoISAPICredentialsConfig:
 
 @dataclass(frozen=True, slots=True)
 class Config:
+    country_code: str
     database: DatabaseConfig
     app: AppConfig
     logging: LoggingConfig
@@ -60,6 +61,7 @@ def load_config(config_file_path: str | pathlib.Path) -> Config:
     with open(config_file_path, 'rb') as file:
         config = tomllib.load(file)
     return Config(
+        country_code=config['country_code'],
         database=DatabaseConfig(
             url=config['database']['url'],
         ),

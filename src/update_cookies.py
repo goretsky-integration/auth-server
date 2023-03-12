@@ -30,7 +30,12 @@ def main():
 
     accounts_cookies = []
     for account in decrypted_accounts:
-        accounts_cookies.append(dodo.get_new_auth_cookies(account.name, account.login, account.password))
+        accounts_cookies.append(dodo.get_new_auth_cookies(
+            country_code=config.country_code,
+            account_name=account.name,
+            login=account.login,
+            password=account.password,
+        ))
 
     for account_cookies in accounts_cookies:
         auth_service.update_account_cookies(account_cookies)

@@ -10,15 +10,14 @@ __all__ = (
     'get_new_auth_tokens',
 )
 
-LOGIN_URL = 'https://auth.dodopizza.ru/Authenticate/LogOn'
-TOKEN_URL = 'https://auth.dodois.io/connect/token'
 HEADERS = {'User-Agent': 'dodoextbot'}
 
 
-def get_new_auth_cookies(account_name: str, login: str, password: str) -> models.AuthCookies:
-    data = {'CountryCode': 'Ru', 'login': login, 'password': password}
+def get_new_auth_cookies(country_code: str, account_name: str, login: str, password: str) -> models.AuthCookies:
+    data = {'login': login, 'password': password}
+    url = f'https://auth.dodopizza.{country_code}/Authenticate/LogOn'
     with requests.Session() as session:
-        response = session.post(LOGIN_URL, headers=HEADERS, data=data)
+        response = session.post(url, headers=HEADERS, data=data)
         if response.status_code == 403:
             raise exceptions.ForbiddenHostError('It is not allowed to login from this host')
         if not response.ok:
@@ -39,7 +38,7 @@ def get_new_auth_tokens(
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token
     }
-    response = requests.post(TOKEN_URL, data=data, headers=HEADERS)
+    response = requests.post('https://auth.dodois.io/connect/token', data=data, headers=HEADERS)
     try:
         response_json = response.json()
     except json.JSONDecodeError:
