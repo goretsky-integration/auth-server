@@ -10,7 +10,6 @@ __all__ = (
     'get_new_auth_tokens',
 )
 
-TOKEN_URL = 'https://auth.dodois.io/connect/token'
 HEADERS = {'User-Agent': 'dodoextbot'}
 
 
@@ -39,7 +38,7 @@ def get_new_auth_tokens(
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token
     }
-    response = requests.post(TOKEN_URL, data=data, headers=HEADERS)
+    response = requests.post('https://auth.dodois.io/connect/token', data=data, headers=HEADERS)
     try:
         response_json = response.json()
     except json.JSONDecodeError:
