@@ -16,7 +16,7 @@ HEADERS = {'User-Agent': 'dodoextbot'}
 
 
 def get_new_auth_cookies(account_name: str, login: str, password: str) -> models.AuthCookies:
-    data = {'CountryCode': 'Ru', 'login': login, 'password': password}
+    data = {'login': login, 'password': password}
     with requests.Session() as session:
         response = session.post(LOGIN_URL, headers=HEADERS, data=data)
         if response.status_code == 403:
