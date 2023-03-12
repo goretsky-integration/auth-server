@@ -39,7 +39,7 @@ def get_new_auth_tokens(
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token
     }
-    response = requests.post(TOKEN_URL, data=data)
+    response = requests.post(TOKEN_URL, data=data, headers=HEADERS)
     try:
         response_json = response.json()
     except json.JSONDecodeError:
