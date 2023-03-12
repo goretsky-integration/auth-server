@@ -10,15 +10,15 @@ __all__ = (
     'get_new_auth_tokens',
 )
 
-LOGIN_URL = 'https://auth.dodopizza.ru/Authenticate/LogOn'
 TOKEN_URL = 'https://auth.dodois.io/connect/token'
 HEADERS = {'User-Agent': 'dodoextbot'}
 
 
-def get_new_auth_cookies(account_name: str, login: str, password: str) -> models.AuthCookies:
+def get_new_auth_cookies(country_code: str, account_name: str, login: str, password: str) -> models.AuthCookies:
     data = {'login': login, 'password': password}
+    url = f'https://auth.dodopizza.{country_code}/Authenticate/LogOn'
     with requests.Session() as session:
-        response = session.post(LOGIN_URL, headers=HEADERS, data=data)
+        response = session.post(url, headers=HEADERS, data=data)
         if response.status_code == 403:
             raise exceptions.ForbiddenHostError('It is not allowed to login from this host')
         if not response.ok:
