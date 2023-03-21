@@ -13,9 +13,12 @@ def main():
     auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
 
     accounts = auth_service.get_accounts()
-    office_manager_account_names = {account.name for account in accounts if account.name.startswith('office')}
+    dodo_is_api_account_names = {
+        account.name for account in accounts
+        if account.name.startswith('api')
+    }
 
-    for account_name in office_manager_account_names:
+    for account_name in dodo_is_api_account_names:
         account_tokens = auth_service.get_account_tokens(account_name)
         new_account_tokens = dodo.get_new_auth_tokens(
             account_name=account_name,
