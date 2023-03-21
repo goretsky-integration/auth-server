@@ -14,7 +14,10 @@ def main():
     crypt = CryptText(config.app.secret_key)
 
     auth_service = AuthService(base_url=config.external_api.auth_service_base_url)
-    encrypted_accounts = auth_service.get_accounts()
+    encrypted_accounts = [
+        account for account in auth_service.get_accounts()
+        if account.name.startswith('office') or account.name.startswith('shift')
+    ]
     decrypted_accounts = []
     for account in encrypted_accounts:
         try:
